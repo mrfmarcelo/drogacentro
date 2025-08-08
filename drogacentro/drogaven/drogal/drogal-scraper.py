@@ -8,9 +8,10 @@ import os
 import pandas as pd
 from datetime import datetime
 from tqdm import tqdm
+from fake_useragent import UserAgent
 
 # --- Módulos necessários ---
-# python -m pip install requests beautifulsoup4 lxml tqdm pandas
+# python -m pip install requests beautifulsoup4 lxml tqdm pandas fake_useragent
 
 # --- Configuração ---
 ROOT_SITEMAP_URL = "https://www.drogal.com.br/sitemap.xml"
@@ -30,10 +31,17 @@ GENERAL_PRICE_CONTAINER = "div.drogal-product-page-0-x-drogal-product-page-produ
 TAG_SELECTOR = 'script[type="application/ld+json"]'
 EAN_SELECTOR = 'template[data-type="json"][data-varname="__STATE__"] > script'
 
-# Headers para simular um navegador e evitar bloqueio
+# Headers to mimic a browser request and avoid being blocked
+ua = UserAgent()
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
+    'User-Agent': ua.random,
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Connection': 'keep-alive',
+    'Upgrade-Insecure-Requests': '1'
 }
+
 
 print('\n --- Drogal Scraper ---\n')
 
@@ -72,7 +80,7 @@ def get_product_sitemap_urls(root_sitemap_url):
 def extract_product_urls_from_sitemap(sitemap_url):
     """
     Extrai as URLs de produtos de um sitemap XML
-    Os sitemaps devem ter a tahg <loc> nas URLs
+    Os sitemaps devem ter a tag <loc> nas URLs
     """
     print(f"Baixando sitemap: {sitemap_url}")
     xml_content = fetch_url(sitemap_url)

@@ -155,9 +155,9 @@ def save_data_to_files(data, output_dir="output"):
     os.makedirs(output_dir, exist_ok=True)
 
     date_str = datetime.now().strftime("%Y-%m-%d")
-    json_filepath = os.path.join(output_dir, f"Preços Drogaven {date_str}.json")
-    csv_filepath = os.path.join(output_dir, f"Preços Drogaven {date_str}.csv")
-    xlsx_filepath = os.path.join(output_dir, f"Preços Drogaven {date_str}.xlsx")
+    json_filepath = os.path.join(output_dir, f"Preços DrogaRaia {date_str}.json")
+    csv_filepath = os.path.join(output_dir, f"Preços DrogaRaia {date_str}.csv")
+    xlsx_filepath = os.path.join(output_dir, f"Preços DrogaRaia {date_str}.xlsx")
 
     with open(json_filepath, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)

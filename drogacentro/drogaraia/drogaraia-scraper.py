@@ -19,8 +19,8 @@ SITEMAP_URL = "https://www.drogaraia.com.br/sitemap/2/sitemap.xml"
 MAX_WORKERS = 500 # You can adjust this value based on your system's capabilities and website's tolerance
 
 # Control scraping scope: Set to True to scrape all unique URLs, False to scrape a sample
-TEST_RUN = True
-SAMPLE_SIZE = 500 # Number of URLs to scrape if SCRAPE_ALL_URLS is False
+TEST_RUN = False
+SAMPLE_SIZE = 100 # Number of URLs to scrape if SCRAPE_ALL_URLS is False
 # Selectors for data extraction
 PRICE_SELECTOR = 'meta[property="product:price:amount"]'
 NAME_SELECTOR = 'meta[property="og:image:alt"]'

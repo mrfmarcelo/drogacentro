@@ -16,7 +16,7 @@ from fake_useragent import UserAgent
 SITEMAP_URL = "https://www.drogaraia.com.br/sitemap/2/sitemap.xml"
 
 # Set the maximum number of worker threads for multi-threading
-MAX_WORKERS = 500 # You can adjust this value based on your system's capabilities and website's tolerance
+MAX_WORKERS = 10 # You can adjust this value based on your system's capabilities and website's tolerance
 
 # Control scraping scope: Set to True to scrape all unique URLs, False to scrape a sample
 TEST_RUN = False

@@ -223,6 +223,3 @@ def main():
 if __name__ == "__main__":
     main()
 
-# response = requests.get(SITEMAP_URL, headers=HEADERS, timeout=10)
-# print(response)
-

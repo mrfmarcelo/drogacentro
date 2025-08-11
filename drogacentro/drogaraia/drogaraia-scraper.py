@@ -1,12 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
-import json  # noqa: F401
+import json
 import time
-import concurrent.futures  # noqa: F401
-import os  # noqa: F401
-import pandas as pd  # noqa: F401
-from datetime import datetime  # noqa: F401
-from tqdm import tqdm  # noqa: F401
+import concurrent.futures
+import os
+import pandas as pd
+from datetime import datetime
+from tqdm import tqdm
 from fake_useragent import UserAgent
 
 # --- Required modules ---
@@ -39,6 +39,10 @@ HEADERS = {
 
 
 print('\n --- DrogaRaia Scraper ---\n')
+
+# Checar a variável de teste
+if TEST_RUN:
+    print(f'Iniciando teste com {SAMPLE_SIZE} URLs\n')
 
 # --- Funções acessórias ---
 
@@ -77,11 +81,113 @@ def extract_product_urls_from_sitemap(sitemap_url):
     time.sleep(1)
     return urls
 
+def parse_product_page(html_content, url):
+    """
+    Lê a página do produto e extrai preço, EAN e nome a partir de uma URL
+    Retorna um dicionário com as informações do produto ou None se o produto não estiver disponível
+    """
+    soup = BeautifulSoup(html_content, 'html.parser')
+    product_data = {"url": url, "price": None, "ean": None, "name": None}
+
+
+    try:
+        price_tag = soup.select_one(PRICE_SELECTOR)
+        price_text = price_tag.get_text(strip=True)
+        cleaned_price = price_text.replace('R$', '').replace(',', '.').strip()
+        price_decimal = float(cleaned_price)
+        product_data['price'] = price_decimal
+    except (AttributeError, ValueError, TypeError):
+        pass
+
+
+    # Extrai a tag para o nome
+    try:
+        name_description_tag = soup.select_one(NAME_SELECTOR)
+        product_data["name"] = name_description_tag.get('content')
+    except (json.JSONDecodeError, AttributeError):
+        pass
+        
+        
+    # Extrai a tag para o EAN
+    ld_json_scripts = soup.find_all('script', type='application/ld+json')
+    for script in ld_json_scripts:
+        if script.string:
+            try:
+                # Parse the JSON content
+                data = json.loads(script.string)
+                ean = data.get("gtin13")
+
+                # If ean is found, store the value and stop searching
+                if ean:
+                    product_data['ean'] = ean
+                    break
+            except json.JSONDecodeError:
+                # This script's content was not valid JSON, so we just move on
+                continue
+            
+
+    # Junta os dados
+    if (product_data["ean"] or product_data["name"]) and (product_data["price"] is None or product_data["price"] == ""):
+        return None
+
+    return product_data
+
+
+
+def scrape_single_product(url):
+    """
+    Função para o worker baixar e processar a URL de um um único produto
+    Retorna product_info ou None se o produto não estiver disponível
+    """
+    html_content = fetch_url(url)
+    if not html_content:
+        return None
+
+    product_info = parse_product_page(html_content, url)
+    time.sleep(2) # Pausa entre os requests
+    return product_info
+
+
+def save_data_to_files(data, output_dir="output"):
+    """
+    Salva os dados em JSON, CSV e XLSX, com a data no nome
+    """
+    os.makedirs(output_dir, exist_ok=True)
+
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    json_filepath = os.path.join(output_dir, f"Preços Drogaven {date_str}.json")
+    csv_filepath = os.path.join(output_dir, f"Preços Drogaven {date_str}.csv")
+    xlsx_filepath = os.path.join(output_dir, f"Preços Drogaven {date_str}.xlsx")
+
+    with open(json_filepath, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+    print(f"\nDados salvos em: {json_filepath}")
+
+    if data:
+        df = pd.DataFrame(data)
+
+        df.rename(columns={
+            "url": "Link",
+            "price": "Preço (R$)",
+            "ean": "EAN",
+            "name": "Produto"
+        }, inplace=True)
+
+        df = df[["EAN", "Produto", "Preço (R$)", "Link"]]
+
+        df.to_csv(csv_filepath, sep=';', index=False)
+        print(f"Dados salvos em: {csv_filepath}.")
+
+        df.to_excel(xlsx_filepath, index=False)
+        print(f"Dados salvos em: {xlsx_filepath}.")
+    else:
+        print("Nenhum dado para salvar.")
+
 
 # -----------------
 
 def main():
-    # start_time = time.perf_counter()
+    start_time = time.perf_counter()
 
     # Extrair todas as URLs de produtos
     urls_from_sitemap = extract_product_urls_from_sitemap(SITEMAP_URL)
@@ -90,9 +196,9 @@ def main():
     unique_product_urls = list(set(urls_from_sitemap))
     print(f"\nEncontradas {len(unique_product_urls)} URLs de produtos.")
 
-    # scraped_products = []
-    # no_ean = []
-    # total_failed_products = 0
+    scraped_products = []
+    no_ean = []
+    total_failed_products = 0
 
     # Iniciar teste ou scraping
     if TEST_RUN:
@@ -102,7 +208,26 @@ def main():
         urls_to_scrape = unique_product_urls
         print(f"Extraindo {len(urls_to_scrape)} URLs de produtos...")
 
-# -----------------
+    # Usar workers para scraping em paralelo
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        for product_info in tqdm(executor.map(scrape_single_product, urls_to_scrape), total=len(urls_to_scrape), desc="Extraindo Produtos..."):
+            if not product_info:
+                total_failed_products += 1
+                continue
+            if not product_info['ean']:
+                no_ean.append(product_info)
+            scraped_products.append(product_info)
+
+    # Salvar em arquivos
+    save_data_to_files(scraped_products)
+
+    end_time = time.perf_counter()
+    total_time = end_time - start_time
+    print(f"\nTempo total: {total_time:.2f} segundos")
+    print(f"Total de produtos com sucesso: {len(scraped_products)}")
+    print(f"Total de produtos sem EAN: {len(no_ean)}.")
+    print(f"Total de produtos com falha: {total_failed_products}")
+
 
 if __name__ == "__main__":
     main()

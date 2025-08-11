@@ -6,40 +6,42 @@ import time
 import concurrent.futures
 import os
 import pandas as pd
-from datetime import datetime  # (caso ainda não tenha importado)
-from tqdm import tqdm  # Import tqdm para barras de progresso
+from datetime import datetime
+from tqdm import tqdm
 
 # --- Módulos necessários ---
-# python -m pip install requests beautifulsoup4 lxml tqdm pandas openpyxl
+# python -m pip install requests beautifulsoup4 lxml tqdm pandas
 
 # --- Configuração ---
 ROOT_SITEMAP_URL = "https://www.drogal.com.br/sitemap.xml"
 PRODUCT_SITEMAP_REGEX = r"https://www\.drogal\.com\.br/sitemap/product-\d+\.xml"
 
 # Número máximo de threads para scraping paralelo
-MAX_WORKERS = 200  # Ajuste conforme a capacidade do seu sistema e tolerância do site
+MAX_WORKERS = 500  # Ajuste conforme a capacidade do seu sistema e tolerância do site
 
-# Controle do escopo do scraping: True para amostra, False para todos
-TEST_RUN = True
-SAMPLE_SIZE = 100  # Número de URLs a serem raspadas no modo de teste
+# Testar scraping: True para testar, False para scraping normal
+TEST_RUN = False
+SAMPLE_SIZE = 100  # Número de URLs a serem utilizadas no modo de teste
 
-# Seletores para extração de dados
+# Seletores CSS para extração de dados
 PRICE_SELECTOR = ".undefined.drogal-product-page-0-x-drogal-product-page-product-base-price div"
 FALLBACK_PRICE_SELECTOR = "div.drogal-product-page-0-x-drogal-product-page-product-base-price span.drogal-product-page-0-x-drogal-product-page-selling-price"
 GENERAL_PRICE_CONTAINER = "div.drogal-product-page-0-x-drogal-product-page-product-base-price"
 TAG_SELECTOR = 'script[type="application/ld+json"]'
 EAN_SELECTOR = 'template[data-type="json"][data-varname="__STATE__"] > script'
 
-# Cabeçalhos para simular um navegador e evitar bloqueio
+# Headers para simular um navegador e evitar bloqueio
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0'
 }
 
-print('\n--- Drogal Scraper ---\n')
+print('\n --- Drogal Scraper ---\n')
 
-# --- Funções utilitárias ---
+# --- Funções acessórias ---
 def fetch_url(url):
-    """Baixa o conteúdo de uma URL com cabeçalho User-Agent."""
+    """
+    Baixa o conteúdo de uma URL com o User-Agent
+    """
     try:
         response = requests.get(url, headers=HEADERS, timeout=10)
         response.raise_for_status()
@@ -49,12 +51,12 @@ def fetch_url(url):
 
 def get_product_sitemap_urls(root_sitemap_url):
     """
-    Lê o sitemap raiz e extrai as URLs dos sitemaps de produtos
+    Lê o sitemap base e extrai as URLs dos sitemaps de produtos
     """
-    print(f"Baixando sitemap raiz: {root_sitemap_url}")
+    print(f"Extraindo sitemap base: {root_sitemap_url}")
     xml_content = fetch_url(root_sitemap_url)
     if not xml_content:
-        print("Não foi possível baixar o sitemap raiz.")
+        print("Não foi possível baixar o sitemap base.")
         return []
 
     soup = BeautifulSoup(xml_content, 'xml')
@@ -127,26 +129,26 @@ def parse_product_page(html_content, url):
             product_data["price"] = price_text
 
     json_ld_content = None
-    ean_string = soup.select_one(TAG_SELECTOR)
-    if ean_string and ean_string.string:
+    json_string = soup.select_one(TAG_SELECTOR)
+    if json_string and json_string.string:
         try:
-            json_ld_content = json.loads(ean_string.string)
+            json_ld_content = json.loads(json_string.string)
             product_data["name"] = json_ld_content.get('name')
         except (json.JSONDecodeError, AttributeError):
             pass
 
     ean_script = soup.select_one(EAN_SELECTOR)
-    if ean_script and ean_script.string:
-        try:
-            ean_json = json.loads(ean_script.string)
-            for key, value in ean_json.items():
-                if key.endswith('.items.0') and isinstance(value, dict):
-                    ean_candidate = value.get('ean')
-                    if ean_candidate:
-                        product_data["ean"] = ean_candidate
-                        break
-        except json.JSONDecodeError:
-            pass
+    try:
+        ean_json = json.loads(ean_script.string)
+        for key, value in ean_json.items():
+            if not key.endswith('.items.0') or not isinstance(value, dict):
+                continue
+            ean_candidate = value.get('ean')
+            if ean_candidate:
+                product_data["ean"] = ean_candidate
+                break
+    except json.JSONDecodeError:
+        pass
 
     if (product_data["ean"] or product_data["name"]) and (product_data["price"] is None or product_data["price"] == ""):
         return None
@@ -155,14 +157,15 @@ def parse_product_page(html_content, url):
 
 def scrape_single_product(url):
     """
-    Função worker para baixar e processar um único produto.
+    Função para o worker baixar e processar a URL de um um único produto
+    Retorna product_info ou None se o produto não estiver disponível
     """
     html_content = fetch_url(url)
     if not html_content:
         return None
 
     product_info = parse_product_page(html_content, url)
-    time.sleep(2)  # Pausa para ser educado com o servidor
+    time.sleep(2) # Pausa entre os requests
     return product_info
 
 def save_data_to_files(data, output_dir="output"):
@@ -193,10 +196,10 @@ def save_data_to_files(data, output_dir="output"):
         df = df[["EAN", "Produto", "Preço (R$)", "Link"]]
 
         df.to_csv(csv_filepath, sep=';', index=False)
-        print(f"Dados salvos em: {csv_filepath}")
+        print(f"Dados salvos em: {csv_filepath}.")
 
         df.to_excel(xlsx_filepath, index=False)
-        print(f"Dados salvos em: {xlsx_filepath}")
+        print(f"Dados salvos em: {xlsx_filepath}.")
     else:
         print("Nenhum dado para salvar.")
 
@@ -206,7 +209,7 @@ def main():
     # 1: Extrair todas as URLs de sitemap
     product_sitemap_urls = get_product_sitemap_urls(ROOT_SITEMAP_URL)
     if not product_sitemap_urls:
-        print("Nenhum sitemap de produto encontrado. Encerrando.")
+        print("Nenhum sitemap de produto encontrado. Encerrando...")
         return
     
     # 2: Extrair todas as URLs de produtos
@@ -217,7 +220,7 @@ def main():
 
     # Remover duplicados
     unique_product_urls = list(set(all_product_urls))
-    print(f"\nEncontradas {len(unique_product_urls)} URLs únicas de produtos.")
+    print(f"\nEncontradas {len(unique_product_urls)} URLs de produtos.")
 
     scraped_products = []
     total_failed_products = 0
@@ -225,14 +228,14 @@ def main():
     # Iniciar teste ou scraping
     if TEST_RUN:
         urls_to_scrape = unique_product_urls[:SAMPLE_SIZE]
-        print(f"\nRaspando {len(urls_to_scrape)} URLs de produtos...")
+        print(f"Extraindo {len(urls_to_scrape)} URLs de produtos para teste...")
     else:
         urls_to_scrape = unique_product_urls
-        print(f"\nRaspando TODAS as {len(urls_to_scrape)} URLs de produtos...")
+        print(f"Extraindo {len(urls_to_scrape)} URLs de produtos...")
 
     # Usar workers para scraping em paralelo
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        for product_info in tqdm(executor.map(scrape_single_product, urls_to_scrape), total=len(urls_to_scrape), desc="Raspando Produtos"):
+        for product_info in tqdm(executor.map(scrape_single_product, urls_to_scrape), total=len(urls_to_scrape), desc="Extraindo Produtos..."):
             if product_info:
                 scraped_products.append(product_info)
             else:
@@ -243,9 +246,10 @@ def main():
 
     end_time = time.perf_counter()
     total_time = end_time - start_time
-    print(f"\nTempo total: {total_time:.2f} segundos")
-    print(f"Total de produtos com sucesso: {len(scraped_products)}")
-    print(f"Total de produtos com falha: {total_failed_products}")
+    print(f"\nTempo total: {total_time:.2f} segundos.")
+    print(f"Total de produtos com sucesso: {len(scraped_products)}.")
+    print(f"Total de produtos com falha: {total_failed_products}.")
 
 if __name__ == "__main__":
     main()
+

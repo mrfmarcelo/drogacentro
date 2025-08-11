@@ -7,32 +7,27 @@ import os
 import pandas as pd
 from datetime import datetime
 from tqdm import tqdm
-from fake_useragent import UserAgent
 
 # --- Required modules ---
-# python -m pip install requests beautifulsoup4 lxml tqdm fake_useragent
+# python -m pip install requests lxml fake_useragent beautifulsoup4 tqdm pandas openpyxl 
 
 # --- Configuration ---
-SITEMAP_URL = "https://io.convertiez.com.br/s/drogaven/sitemap-products-1.xml"
+SITEMAP_URL = "https://www.drogaraia.com.br/sitemap/2/sitemap.xml"
 
 # Set the maximum number of worker threads for multi-threading
-MAX_WORKERS = 5 # You can adjust this value based on your system's capabilities and website's tolerance
+MAX_WORKERS = 500 # You can adjust this value based on your system's capabilities and website's tolerance
 
 # Control scraping scope: Set to True to scrape all unique URLs, False to scrape a sample
-TEST_RUN = True
+TEST_RUN = False
 SAMPLE_SIZE = 100 # Number of URLs to scrape if SCRAPE_ALL_URLS is False
-
 # Selectors for data extraction
-PRICE_SELECTOR = ".undefined.drogal-product-page-0-x-drogal-product-page-product-base-price div"
-FALLBACK_PRICE_SELECTOR = "div.drogal-product-page-0-x-drogal-product-page-product-base-price span.drogal-product-page-0-x-drogal-product-page-selling-price"
-GENERAL_PRICE_CONTAINER = "div.drogal-product-page-0-x-drogal-product-page-product-base-price"
-NAME_SELECTOR = 'meta[name="description"]'
-EAN_SELECTOR = 'meta[itemprop="gtin13"]'
+PRICE_SELECTOR = 'meta[property="product:price:amount"]'
+NAME_SELECTOR = 'meta[property="og:image:alt"]'
+EAN_SELECTOR = 'script[type="application/ld+json"]'
 
 # Headers to mimic a browser request and avoid being blocked
-ua = UserAgent()
 HEADERS = {
-    'User-Agent': ua.random,
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0',
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
     'Accept-Language': 'en-US,en;q=0.5',
     'Accept-Encoding': 'gzip, deflate, br',
@@ -41,7 +36,11 @@ HEADERS = {
 }
 
 
-print('\n --- Drogaven Scraper ---\n')
+print('\n --- DrogaRaia Scraper ---\n')
+
+# Checar a variável de teste
+if TEST_RUN:
+    print(f'Iniciando teste com {SAMPLE_SIZE} URLs\n')
 
 # --- Funções acessórias ---
 
@@ -68,10 +67,17 @@ def extract_product_urls_from_sitemap(sitemap_url):
         return []
 
     soup = BeautifulSoup(xml_content, 'xml')
-    urls = [loc_tag.get_text() for loc_tag in soup.find_all('loc')]
-    time.sleep(1)
-    return urls
 
+    urls = []
+    for url_tag in soup.find_all('url'):
+        loc_tag = url_tag.find('loc')
+        priority_tag = url_tag.find('priority')
+
+        if priority_tag.get_text() == '1.0':
+            urls.append(loc_tag.get_text())
+        
+    time.sleep()
+    return urls
 
 def parse_product_page(html_content, url):
     """
@@ -83,33 +89,34 @@ def parse_product_page(html_content, url):
 
 
     # Extrai a tag para o preço
-    price_paragraph = soup.select_one('p.seal-pix.pix-price.sale-price.sale-price-pix.money')
-
     try:
-        strong_tag = price_paragraph.find('strong')
-        price_text = strong_tag.get_text(strip=True)
-        cleaned_price = price_text.replace('R$', '').replace(',', '.').strip()
-        price_decimal = float(cleaned_price)
-        product_data['price'] = price_decimal
+        price_tag = soup.select_one(PRICE_SELECTOR)
+        product_data['price'] = price_tag.get('content')
     except (AttributeError, ValueError, TypeError):
         pass
-
 
     # Extrai a tag para o nome
     try:
         name_description_tag = soup.select_one(NAME_SELECTOR)
-        product_data["name"] = name_description_tag.get('content')
+        product_data['name'] = name_description_tag.get('content')
     except (json.JSONDecodeError, AttributeError):
         pass
-        
         
     # Extrai a tag para o EAN
-    try:
-        ean_description_tag = soup.select_one(EAN_SELECTOR)
-        product_data["ean"] = ean_description_tag.get('content')
-    except (json.JSONDecodeError, AttributeError):
-        pass
-        
+    ld_json_scripts = soup.select(EAN_SELECTOR)
+    for script in ld_json_scripts:
+        if script.string:
+            try:
+                # Parse the JSON content
+                data = json.loads(script.string)
+                ean = data.get("gtin13")
+                # If ean is found, store the value and stop searching
+                if ean:
+                    product_data['ean'] = ean
+                    break
+            except json.JSONDecodeError:
+                # This script's content was not valid JSON, so we just move on
+                continue
 
     # Junta os dados
     if (product_data["ean"] or product_data["name"]) and (product_data["price"] is None or product_data["price"] == ""):
@@ -139,9 +146,9 @@ def save_data_to_files(data, output_dir="output"):
     os.makedirs(output_dir, exist_ok=True)
 
     date_str = datetime.now().strftime("%Y-%m-%d")
-    json_filepath = os.path.join(output_dir, f"Preços Drogaven {date_str}.json")
-    csv_filepath = os.path.join(output_dir, f"Preços Drogaven {date_str}.csv")
-    xlsx_filepath = os.path.join(output_dir, f"Preços Drogaven {date_str}.xlsx")
+    json_filepath = os.path.join(output_dir, f"Preços DrogaRaia {date_str}.json")
+    csv_filepath = os.path.join(output_dir, f"Preços DrogaRaia {date_str}.csv")
+    xlsx_filepath = os.path.join(output_dir, f"Preços DrogaRaia {date_str}.xlsx")
 
     with open(json_filepath, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)

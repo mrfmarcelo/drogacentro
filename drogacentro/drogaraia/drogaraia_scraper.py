@@ -91,7 +91,7 @@ def parse_product_page(html_content, url):
     # Extrai a tag para o preço
     try:
         price_tag = soup.select_one(PRICE_SELECTOR)
-        product_data['price'] = price_tag.get('content')
+        product_data['price'] = float(price_tag.get('content'))
     except (AttributeError, ValueError, TypeError):
         pass
 

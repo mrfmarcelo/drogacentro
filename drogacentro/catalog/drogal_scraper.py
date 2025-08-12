@@ -20,8 +20,8 @@ PRODUCT_SITEMAP_REGEX = r"https://www\.drogal\.com\.br/sitemap/product-\d+\.xml"
 MAX_WORKERS = 500  # Ajuste conforme a capacidade do seu sistema e tolerância do site
 
 # Testar scraping: True para testar, False para scraping normal
-TEST_RUN = False
-SAMPLE_SIZE = 100  # Número de URLs a serem utilizadas no modo de teste
+TEST_RUN = True
+SAMPLE_SIZE = 500 # Number of URLs to scrape if SCRAPE_ALL_URLS is False
 
 # Seletores CSS para extração de dados
 PRICE_SELECTOR = ".undefined.drogal-product-page-0-x-drogal-product-page-product-base-price div"

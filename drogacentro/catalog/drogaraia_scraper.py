@@ -18,8 +18,9 @@ SITEMAP_URL = "https://www.drogaraia.com.br/sitemap/2/sitemap.xml"
 MAX_WORKERS = 500 # You can adjust this value based on your system's capabilities and website's tolerance
 
 # Control scraping scope: Set to True to scrape all unique URLs, False to scrape a sample
-TEST_RUN = False
-SAMPLE_SIZE = 100 # Number of URLs to scrape if SCRAPE_ALL_URLS is False
+TEST_RUN = True
+SAMPLE_SIZE = 500 # Number of URLs to scrape if SCRAPE_ALL_URLS is False
+
 # Selectors for data extraction
 PRICE_SELECTOR = 'meta[property="product:price:amount"]'
 NAME_SELECTOR = 'meta[property="og:image:alt"]'
@@ -76,7 +77,7 @@ def extract_product_urls_from_sitemap(sitemap_url):
         if priority_tag.get_text() == '1.0':
             urls.append(loc_tag.get_text())
         
-    time.sleep()
+    time.sleep(1)
     return urls
 
 def parse_product_page(html_content, url):
@@ -91,7 +92,7 @@ def parse_product_page(html_content, url):
     # Extrai a tag para o preço
     try:
         price_tag = soup.select_one(PRICE_SELECTOR)
-        product_data['price'] = price_tag.get('content')
+        product_data['price'] = float(price_tag.get('content'))
     except (AttributeError, ValueError, TypeError):
         pass
 

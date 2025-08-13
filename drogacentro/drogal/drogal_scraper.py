@@ -17,11 +17,11 @@ ROOT_SITEMAP_URL = "https://www.drogal.com.br/sitemap.xml"
 PRODUCT_SITEMAP_REGEX = r"https://www\.drogal\.com\.br/sitemap/product-\d+\.xml"
 
 # Número máximo de threads para scraping paralelo
-MAX_WORKERS = 200  # Ajuste conforme a capacidade do seu sistema e tolerância do site
+MAX_WORKERS = 500  # Ajuste conforme a capacidade do seu sistema e tolerância do site
 
 # Testar scraping: True para testar, False para scraping normal
 TEST_RUN = True
-SAMPLE_SIZE = 100  # Número de URLs a serem utilizadas no modo de teste
+SAMPLE_SIZE = 500 # Number of URLs to scrape if SCRAPE_ALL_URLS is False
 
 # Seletores CSS para extração de dados
 PRICE_SELECTOR = ".undefined.drogal-product-page-0-x-drogal-product-page-product-base-price div"
@@ -32,7 +32,7 @@ EAN_SELECTOR = 'template[data-type="json"][data-varname="__STATE__"] > script'
 
 # Headers para simular um navegador e evitar bloqueio
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0'
 }
 
 print('\n --- Drogal Scraper ---\n')
@@ -175,7 +175,7 @@ def save_data_to_files(data, output_dir="output"):
     os.makedirs(output_dir, exist_ok=True)
 
     date_str = datetime.now().strftime("%Y-%m-%d")
-    json_filepath = os.path.join(output_dir, f"Preços Drogal {date_str}.json")
+    json_filepath = os.path.join(output_dir, f"Scrape_Drogal_{date_str}.json")
     csv_filepath = os.path.join(output_dir, f"Preços Drogal {date_str}.csv")
     xlsx_filepath = os.path.join(output_dir, f"Preços Drogal {date_str}.xlsx")
 

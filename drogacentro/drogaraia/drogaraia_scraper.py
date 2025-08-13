@@ -15,11 +15,12 @@ from tqdm import tqdm
 SITEMAP_URL = "https://www.drogaraia.com.br/sitemap/2/sitemap.xml"
 
 # Set the maximum number of worker threads for multi-threading
-MAX_WORKERS = 10 # You can adjust this value based on your system's capabilities and website's tolerance
+MAX_WORKERS = 500 # You can adjust this value based on your system's capabilities and website's tolerance
 
 # Control scraping scope: Set to True to scrape all unique URLs, False to scrape a sample
-TEST_RUN = False
-SAMPLE_SIZE = 100 # Number of URLs to scrape if SCRAPE_ALL_URLS is False
+TEST_RUN = True
+SAMPLE_SIZE = 500 # Number of URLs to scrape if SCRAPE_ALL_URLS is False
+
 # Selectors for data extraction
 PRICE_SELECTOR = 'meta[property="product:price:amount"]'
 NAME_SELECTOR = 'meta[property="og:image:alt"]'
@@ -146,7 +147,7 @@ def save_data_to_files(data, output_dir="output"):
     os.makedirs(output_dir, exist_ok=True)
 
     date_str = datetime.now().strftime("%Y-%m-%d")
-    json_filepath = os.path.join(output_dir, f"Preços DrogaRaia {date_str}.json")
+    json_filepath = os.path.join(output_dir, f"Scrape_DrogaRaia_{date_str}.json")
     csv_filepath = os.path.join(output_dir, f"Preços DrogaRaia {date_str}.csv")
     xlsx_filepath = os.path.join(output_dir, f"Preços DrogaRaia {date_str}.xlsx")
 

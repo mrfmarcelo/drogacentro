@@ -175,7 +175,7 @@ def save_data_to_files(data, output_dir="output"):
     os.makedirs(output_dir, exist_ok=True)
 
     date_str = datetime.now().strftime("%Y-%m-%d")
-    json_filepath = os.path.join(output_dir, f"Preços Drogal {date_str}.json")
+    json_filepath = os.path.join(output_dir, f"Scrape_Drogal_{date_str}.json")
     csv_filepath = os.path.join(output_dir, f"Preços Drogal {date_str}.csv")
     xlsx_filepath = os.path.join(output_dir, f"Preços Drogal {date_str}.xlsx")
 

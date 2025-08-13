@@ -77,7 +77,7 @@ def extract_product_urls_from_sitemap(sitemap_url):
         if priority_tag.get_text() == '1.0':
             urls.append(loc_tag.get_text())
         
-    time.sleep(1)
+    time.sleep(2)
     return urls
 
 def parse_product_page(html_content, url):
@@ -147,7 +147,7 @@ def save_data_to_files(data, output_dir="output"):
     os.makedirs(output_dir, exist_ok=True)
 
     date_str = datetime.now().strftime("%Y-%m-%d")
-    json_filepath = os.path.join(output_dir, f"Preços DrogaRaia {date_str}.json")
+    json_filepath = os.path.join(output_dir, f"Scrape_DrogaRaia_{date_str}.json")
     csv_filepath = os.path.join(output_dir, f"Preços DrogaRaia {date_str}.csv")
     xlsx_filepath = os.path.join(output_dir, f"Preços DrogaRaia {date_str}.xlsx")
 

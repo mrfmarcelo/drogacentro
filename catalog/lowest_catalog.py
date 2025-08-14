@@ -25,7 +25,7 @@ def build_catalog(json_individual_catalog):
         try:
             products = json.load(f)
             source_catalog_file = os.path.basename(json_individual_catalog) # Get the filename as the source
-            source_catalog_name = (source_catalog_file.split('_')[1]).upper()
+            source_catalog_name = ((source_catalog_file.split('_')[1]).split('.')[0]).upper()
             pass
         except json.JSONDecodeError:
             print(f"Error: Could not decode JSON from {json_individual_catalog}. Skipping.")

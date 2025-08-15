@@ -34,7 +34,7 @@ def dict_handler(external, internal):
     return internal_compared_catalog
 
 
-def save_data_to_files(data, output_dir="output"):
+def save_data_to_files(data, output_dir="FINAL"):
     """
     Salva os dados em JSON, CSV e XLSX, com a data no nome
     """

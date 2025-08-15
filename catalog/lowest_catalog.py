@@ -122,12 +122,10 @@ def main():
 
     consolidated_data = compare(*SOURCE_FILES)
 
-    os.makedirs('output_consolidado', exist_ok=True)
-
     date_str = datetime.now().strftime("%Y-%m-%d")
-    json_filepath = os.path.join('output_consolidado', f"Scrape_consolidado_{date_str}.json")
-    csv_filepath = os.path.join('output_consolidado', f"Scrape_consolidado_{date_str}.csv")
-    xlsx_filepath = os.path.join('output_consolidado', f"Scrape_consolidado_{date_str}.xlsx")
+    json_filepath = (f"Scrape_consolidado_{date_str}.json")
+    csv_filepath = (f"Scrape_consolidado_{date_str}.csv")
+    xlsx_filepath = (f"Scrape_consolidado_{date_str}.xlsx")
 
     if consolidated_data:
         with open(json_filepath, 'w', encoding='utf-8') as f:

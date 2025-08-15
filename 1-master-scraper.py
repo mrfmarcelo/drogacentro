@@ -1,7 +1,7 @@
 from multiprocessing import Process
-from drogal_scraper import main as drogal
-from drogaven_scraper import main as drogaven
-from drogaraia_scraper import main as drogaraia
+from scrapers.drogal.drogal_scraper import main as drogal
+from scrapers.drogaven.drogaven_scraper import main as drogaven
+from scrapers.drogaraia.drogaraia_scraper import main as drogaraia
 
 if __name__ == "__main__":
     # Create a Process for each imported scraper function

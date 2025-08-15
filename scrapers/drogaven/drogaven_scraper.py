@@ -13,6 +13,7 @@ from tqdm import tqdm
 
 # --- Configuration ---
 SITEMAP_URL = "https://io.convertiez.com.br/s/drogaven/sitemap-products-1.xml"
+OUTPUT_DIR = 'output'
 
 # Set the maximum number of worker threads for multi-threading
 MAX_WORKERS = 500 # You can adjust this value based on your system's capabilities and website's tolerance
@@ -134,11 +135,12 @@ def save_data_to_files(data, output_dir="output"):
     Salva os dados em JSON, CSV e XLSX, com a data no nome
     """
     os.makedirs(output_dir, exist_ok=True)
-
     date_str = datetime.now().strftime("%Y-%m-%d")
-    json_filepath = os.path.join(output_dir, f"Scrape_Drogaven_{date_str}.json")
-    csv_filepath = os.path.join(output_dir, f"Preços Drogaven {date_str}.csv")
-    xlsx_filepath = os.path.join(output_dir, f"Preços Drogaven {date_str}.xlsx")
+    script_dir = os.path.dirname(__file__)
+
+    json_filepath = os.path.abspath(os.path.join(script_dir, '..', '..', output_dir, f"Scrape_Drogaven_{date_str}.json"))
+    csv_filepath = os.path.abspath(os.path.join(script_dir, '..', '..', output_dir, f"Scrape_Drogaven_{date_str}.csv"))
+    xlsx_filepath = os.path.abspath(os.path.join(script_dir, '..', '..', output_dir, f"Scrape_Drogaven_{date_str}.xlsx"))
 
     with open(json_filepath, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
@@ -199,7 +201,7 @@ def main():
             scraped_products.append(product_info)
 
     # Salvar em arquivos
-    save_data_to_files(scraped_products)
+    save_data_to_files(scraped_products, OUTPUT_DIR)
 
     end_time = time.perf_counter()
     total_time = end_time - start_time

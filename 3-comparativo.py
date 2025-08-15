@@ -5,8 +5,12 @@ import pandas as pd
 from datetime import datetime
 import warnings
 
+# Directories
+INPUT_DIR = 'input'
+OUTPUT_DIR = 'output'
+
 # External catalog containing compared prices.
-OUTSIDE_CATALOG = 'Scrape_consolidado_2025-08-14.json'
+OUTSIDE_CATALOG = 'Scrape_concorrentes_2025-08-15.json'
 # Internal spreadsheet containing source data.
 INTERNAL_SHEET = 'Dados_sistema.xlsx'
 
@@ -18,32 +22,36 @@ def dict_handler(external, internal):
         if product in external:
             if float(external[product]['price']) < internal[product]['price']:
                 winner = external[product]['source']
+                best_price = external[product]['price']
             else:
                 winner = 'DROGACENTRO'
+                best_price = internal[product]['price']
             internal_compared_catalog[product] = {
                 'ean': product,
                 'category': internal[product]['category'],
-                'best_external_price': float(external[product]['price']),
-                'best_external': external[product]['source'],
-                'best': winner,
-                'internal_price': internal[product]['price'],
                 'name': internal[product]['name'],
-                'external_url': external[product]['url'],
+                'best_external': external[product]['source'],
+                'best_external_price': float(external[product]['price']),
+                'internal_price': internal[product]['price'],
+                'best': winner,
+                'best_price': best_price,
+                'class': internal[product]['class'],
             }
     
     return internal_compared_catalog
 
 
-def save_data_to_files(data, output_dir="FINAL"):
+def save_data_to_files(data, output_dir="output"):
     """
     Salva os dados em JSON, CSV e XLSX, com a data no nome
     """
     os.makedirs(output_dir, exist_ok=True)
-
     date_str = datetime.now().strftime("%Y-%m-%d")
-    json_filepath = os.path.join(output_dir, f"Compared_{date_str}.json")
-    csv_filepath = os.path.join(output_dir, f"Compared_{date_str}.csv")
-    xlsx_filepath = os.path.join(output_dir, f"Compared_{date_str}.xlsx")
+    script_dir = os.path.dirname(__file__)
+
+    json_filepath = os.path.join(script_dir, output_dir, f"Comparativo_{date_str}.json")
+    csv_filepath = os.path.join(script_dir, output_dir, f"Comparativo_{date_str}.csv")
+    xlsx_filepath = os.path.join(script_dir, output_dir, f"Comparativo_{date_str}.xlsx")
 
     with open(json_filepath, 'w', encoding='utf-8') as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
@@ -51,7 +59,7 @@ def save_data_to_files(data, output_dir="FINAL"):
 
     if data:
         df = pd.DataFrame(data).T
-        df.columns = ['Código de barras', 'Curva', 'Preço concorrente', 'Melhor concorrente', 'Comparação', 'Preço oferta', 'Nome', 'Link concorrente']
+        df.columns = ['EAN', 'Curva', 'Produto', 'Concorrente', 'Preço concorrente', 'Nosso preço', 'Ganhador', 'Melhor preço', 'Classificação']
 
         df.to_csv(csv_filepath, sep=';', index=False)
         print(f"Data saved as: {csv_filepath}.")
@@ -64,9 +72,13 @@ def save_data_to_files(data, output_dir="FINAL"):
 
 def main():
     start_time = time.perf_counter()
-   
+    
+    script_dir = os.path.dirname(__file__)
+    catalog_file = os.path.join(script_dir, INPUT_DIR, OUTSIDE_CATALOG)
+    sheet_file = os.path.join(script_dir, INPUT_DIR, INTERNAL_SHEET)
+
     # Import external catalog
-    with open(OUTSIDE_CATALOG, 'r', encoding='utf-8') as f:
+    with open(catalog_file, 'r', encoding='utf-8') as f:
         external_dict = json.load(f)
 
     # Import internal spreadsheet
@@ -76,9 +88,9 @@ def main():
             message="Workbook contains no default style, apply openpyxl's default",
             category=UserWarning
         )
-        df = pd.read_excel(INTERNAL_SHEET, usecols='A, B, C, J', dtype=str, engine='openpyxl')
+        df = pd.read_excel(sheet_file, usecols='A, B, C, J, Q', dtype=str, engine='openpyxl')
     # Renames columns
-    column_names = ['ean', 'category', 'name', 'price']
+    column_names = ['ean', 'category', 'name', 'price', 'class']
     df.columns = column_names
     df = df.astype({'price': float})
     # Import as list of dicts and convert to dict of dicts
@@ -89,7 +101,7 @@ def main():
     processed_catalog = dict_handler(external_dict, internal_as_dict)
 
     # Save data to files
-    save_data_to_files(processed_catalog)
+    save_data_to_files(processed_catalog, OUTPUT_DIR)
 
     end_time = time.perf_counter()
     total_time = end_time - start_time

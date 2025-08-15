@@ -3,8 +3,12 @@ import os
 import pandas as pd
 from datetime import datetime
 
+# Directories
+INPUT_DIR = 'input'
+OUTPUTE_DIR = 'output'
+
 # JSON filenames to be used for building the master catalog.
-SOURCE_FILES = 'Scrape_Drogal_2025-08-12.json', 'Scrape_DrogaRaia_2025-08-12.json', 'Scrape_Drogaven_2025-08-12.json'
+SOURCE_FILES = 'Scrape_Drogal_2025-08-15.json', 'Scrape_DrogaRaia_2025-08-15.json', 'Scrape_Drogaven_2025-08-15.json'
 # Text file containing EANs.
 TARGET_EANS = 'eans.txt'
 
@@ -25,7 +29,7 @@ def build_catalog(json_individual_catalog):
         try:
             products = json.load(f)
             source_catalog_file = os.path.basename(json_individual_catalog) # Get the filename as the source
-            source_catalog_name = ((source_catalog_file.split('_')[1]).split('.')[0]).upper()
+            source_catalog_name = ((source_catalog_file.split('_')[1]).split('.')[0])
             pass
         except json.JSONDecodeError:
             print(f"Error: Could not decode JSON from {json_individual_catalog}. Skipping.")
@@ -105,34 +109,30 @@ def filter_catalog(master_catalog, target_eans_file):
 
 def compare(*scraped_data):
 
+    ean_path = os.path.join(INPUT_DIR, TARGET_EANS)
+
     individual_catalogs = [build_catalog(json_filename) for json_filename in scraped_data]
     compared_catalog = find_lowest_price(individual_catalogs)
-    processed_catalog = filter_catalog(compared_catalog, TARGET_EANS)
+    processed_catalog = filter_catalog(compared_catalog, ean_path)
         
     return processed_catalog
 
+def save_data_to_files(data, output_dir='output'):
 
-def main():
-
-
-    for source_file in (SOURCE_FILES):
-        if not os.path.exists(source_file):
-            print(f"Warning: File not found - {source_file}. Stopping.")
-            return
-
-    consolidated_data = compare(*SOURCE_FILES)
-
+    os.makedirs(output_dir, exist_ok=True)
     date_str = datetime.now().strftime("%Y-%m-%d")
-    json_filepath = (f"Scrape_consolidado_{date_str}.json")
-    csv_filepath = (f"Scrape_consolidado_{date_str}.csv")
-    xlsx_filepath = (f"Scrape_consolidado_{date_str}.xlsx")
+    script_dir = os.path.dirname(__file__)
 
-    if consolidated_data:
+    json_filepath = os.path.join(script_dir, output_dir, f"Scrape_concorrentes_{date_str}.json")
+    csv_filepath = os.path.join(script_dir, output_dir, f"Scrape_concorrentes_{date_str}.csv")
+    xlsx_filepath = os.path.join(script_dir, output_dir, f"Scrape_concorrentes_{date_str}.xlsx")
+
+    if data:
         with open(json_filepath, 'w', encoding='utf-8') as f:
-            json.dump(consolidated_data, f, indent=2, ensure_ascii=False)
+            json.dump(data, f, indent=2, ensure_ascii=False)
         print(f"\nDados salvos em: {json_filepath}")
 
-        data_list = [v for v in consolidated_data.values()]
+        data_list = [v for v in data.values()]
         df = pd.DataFrame(data_list)
         df.rename(columns={
             "url": "Link",
@@ -151,6 +151,23 @@ def main():
         print(f"Dados salvos em: {xlsx_filepath}.")
     else:
         print("Nenhum dado para salvar.")
+
+
+def main():
+
+    source_file_paths = []
+
+    # Check for source files existence
+    for source_file_name in (SOURCE_FILES):
+        source_file = os.path.join(INPUT_DIR, source_file_name)
+        if not os.path.exists(source_file):
+            print(f"Warning: File not found - {source_file}. Stopping.")
+            return
+        source_file_paths.append(source_file)
+
+    # Process files and save output
+    lowest_catalog = compare(*source_file_paths)
+    save_data_to_files(lowest_catalog)
 
 
 if __name__ == "__main__":

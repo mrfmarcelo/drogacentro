@@ -196,6 +196,7 @@ def main():
                 continue
             if not product_info['ean']:
                 no_ean.append(product_info)
+                continue
             scraped_products.append(product_info)
 
     # Salvar em arquivos
@@ -203,10 +204,13 @@ def main():
 
     end_time = time.perf_counter()
     total_time = end_time - start_time
-    print(f"\nTempo total: {total_time:.2f} segundos")
-    print(f"Total de produtos com sucesso: {len(scraped_products)}")
-    print(f"Total de produtos sem EAN: {len(no_ean)}.")
-    print(f"Total de produtos com falha: {total_failed_products}")
+    print(f"""
+          Drogaven:
+    Tempo total: {total_time:.2f} segundos
+    Total de produtos com sucesso: {len(scraped_products)}
+    Total de produtos sem EAN: {len(no_ean)}
+    Total de produtos com falha: {total_failed_products}
+    """)
 
 
 if __name__ == "__main__":

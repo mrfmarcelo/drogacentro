@@ -1,0 +1,512 @@
+{
+  "7891010793463": {
+    "ean": "7891010793463",
+    "category": "B",
+    "best_external_price": 8.69,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 8.84,
+    "name": "ABSORVENTE SEMPRE LIVRE ESPECIAL ADAPSUAVE C/ABAS LV16 PG14 ",
+    "external_url": "https://www.drogal.com.br/absorvente-externo-sempre-livre-especial-adapt-suave-com-abas-16-unidades/p"
+  },
+  "7509546666990": {
+    "ean": "7509546666990",
+    "category": "C",
+    "best_external_price": 24.55,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 21.93,
+    "name": "ANTISSEPTICO BUCAL COLGATE TOTAL 12 GENGIVA SAUDAVEL 500ML",
+    "external_url": "https://www.drogal.com.br/enxaguante-bucal-colgate-total-12-gengiva-reforcada-500ml/p"
+  },
+  "7891010974312": {
+    "ean": "7891010974312",
+    "category": "C",
+    "best_external_price": 16.59,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 31.57,
+    "name": "ANTISSEPTICO BUCAL LISTERINE COOL MINT REF SUAVE S/ALC 500ML",
+    "external_url": "https://www.drogal.com.br/antisseptico-bucal-listerine-cool-mint-refrescancia-suave-500ml/p"
+  },
+  "6932159610608": {
+    "ean": "6932159610608",
+    "category": "C",
+    "best_external_price": 16.9,
+    "best_external": "DROGARAIA",
+    "best": "DROGACENTRO",
+    "internal_price": 9.39,
+    "name": "BATOM ULTRA MATTE CM359 RR8521359 MELU",
+    "external_url": "https://www.drogaraia.com.br/batom-ultra-matte-melu-by-ruby-rose-cm359-3-8g-976080.html"
+  },
+  "7899706159173": {
+    "ean": "7899706159173",
+    "category": "C",
+    "best_external_price": 97.5,
+    "best_external": "DROGARAIA",
+    "best": "DROGARAIA",
+    "internal_price": 102.88,
+    "name": "CERAVE CREME HIDRATE 200G",
+    "external_url": "https://www.drogaraia.com.br/cerave-creme-hidratante-200g-771283.html"
+  },
+  "7899706159333": {
+    "ean": "7899706159333",
+    "category": "D",
+    "best_external_price": 64.39,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 99.79,
+    "name": "CERAVE LOCAO LIMPEZA HIDRATANTE 200ML",
+    "external_url": "https://www.drogal.com.br/locao-de-limpeza-cerave-hidratante-pele-normal-a-seca-200ml/p"
+  },
+  "7891150055193": {
+    "ean": "7891150055193",
+    "category": "C",
+    "best_external_price": 13.69,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 21.23,
+    "name": "CONDICIONADOR DOVE NUTRICAO OLEO MICELAR 200ML",
+    "external_url": "https://www.drogal.com.br/condicionador-dove-brilho--oleo-micelar-200ml/p"
+  },
+  "7891150037489": {
+    "ean": "7891150037489",
+    "category": "C",
+    "best_external_price": 11.29,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 18.0,
+    "name": "CONDICIONADOR SEDA HIDRATACAO ANTI-NOS 325ML",
+    "external_url": "https://www.drogal.com.br/condicionador-seda-joias-da-natureza-hidratacao-anti-nos-325ml/p"
+  },
+  "7891150101586": {
+    "ean": "7891150101586",
+    "category": "D",
+    "best_external_price": 14.89,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 19.73,
+    "name": "CONDICIONADOR SEDA TOQUE DE SEDA 250ML",
+    "external_url": "https://www.drogal.com.br/condicionador-seda-amino-silk-complex-toque-de-seda-250ml/p"
+  },
+  "7891150049895": {
+    "ean": "7891150049895",
+    "category": "C",
+    "best_external_price": 3.35,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 2.94,
+    "name": "CREME DENTAL CLOSEUP TRIPLE MENTA 90G",
+    "external_url": "https://www.drogal.com.br/creme-dental-closeup-tripla-protecao-menta-70g/p"
+  },
+  "7891024132647": {
+    "ean": "7891024132647",
+    "category": "C",
+    "best_external_price": 18.55,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 21.34,
+    "name": "CREME DENTAL COLGATE SENS.PRO ALIVIO PRO-ARGIN REGULA 110G",
+    "external_url": "https://www.drogal.com.br/creme-dental-para-sensibilidade-colgate-sensitive-pro-alivio-original-110g/p"
+  },
+  "7891037744509": {
+    "ean": "7891037744509",
+    "category": "C",
+    "best_external_price": 6.89,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 7.21,
+    "name": "CREME DENTAL LIQUIDO CLOSE-UP FRESH",
+    "external_url": "https://www.drogal.com.br/creme-dental-em-gel-close-up-liquifresh-ice-100g/p"
+  },
+  "7908458320608": {
+    "ean": "7908458320608",
+    "category": "C",
+    "best_external_price": 28.99,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 43.19,
+    "name": "CREME PENTEAR DEFINICAO NATURAL 1KG",
+    "external_url": "https://www.drogal.com.br/creme-para-pentear-salon-line-definicao-natural-1kg/p"
+  },
+  "7898623952737": {
+    "ean": "7898623952737",
+    "category": "D",
+    "best_external_price": 15.79,
+    "best_external": "DROGARAIA",
+    "best": "DROGARAIA",
+    "internal_price": 18.29,
+    "name": "CREME PENTEAR SALON LINE COND MEL CACHOS INT 300ML",
+    "external_url": "https://www.drogaraia.com.br/creme-para-pentear-sos-cachos-mel-cachos-intensos-salon-line-300g-862831.html"
+  },
+  "7506306233362": {
+    "ean": "7506306233362",
+    "category": "C",
+    "best_external_price": 9.99,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 15.23,
+    "name": "DESODORANTE AXE AEROSOL ANTITRANSPIRANTE URBAN 152ML/90G",
+    "external_url": "https://www.drogal.com.br/desodorante-antitranspirante-axe-urban-invisible-antimarks-152ml/p"
+  },
+  "7891350037807": {
+    "ean": "7891350037807",
+    "category": "C",
+    "best_external_price": 8.99,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 10.19,
+    "name": "DESODORANTE BOZZANO AEROSOL CARVAO ATIVADO 72HS 150ML",
+    "external_url": "https://www.drogal.com.br/desodorante-antitranspirante-aerossol-masculino-bozzano-power-protection-150ml/p"
+  },
+  "7891350038613": {
+    "ean": "7891350038613",
+    "category": "C",
+    "best_external_price": 14.99,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 13.76,
+    "name": "DESODORANTE BOZZANO AEROSOL CLINICAL CLEAN 94G/150ML",
+    "external_url": "https://www.drogal.com.br/desodorante-aerossol-clinical-bozzano-clean-masculino-150ml/p"
+  },
+  "7791293051659": {
+    "ean": "7791293051659",
+    "category": "C",
+    "best_external_price": 29.95,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 22.32,
+    "name": "DESODORANTE DOVE AEROSOL FEM BODY LAVENDER/CAMOMILE 150ML",
+    "external_url": "https://www.drogal.com.br/desodorante-corporal-aerossol-para-peitos-coxas-pes-e-mais-dove-all-body-deo-lavanda-camomila-150ml/p"
+  },
+  "75076719": {
+    "ean": "75076719",
+    "category": "C",
+    "best_external_price": 31.29,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 27.1,
+    "name": "DESODORANTE DOVE CREME MEN+CARE STICK INVISIBLE DRY 45G",
+    "external_url": "https://www.drogal.com.br/desodorante-dove-mencare-stick-invisible-dry-72h-tecnologia-hidratante-45g/p"
+  },
+  "75076696": {
+    "ean": "75076696",
+    "category": "C",
+    "best_external_price": 31.29,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 27.06,
+    "name": "DESODORANTE DOVE STICK ANT COMFORT PROT MEN+CARE 45G",
+    "external_url": "https://www.drogal.com.br/desodorante-dove-mencare-stick-comfort-protection-72h-tecnologia-hidratante-45g/p"
+  },
+  "7896044953562": {
+    "ean": "7896044953562",
+    "category": "C",
+    "best_external_price": 12.89,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 15.46,
+    "name": "DESODORANTE GIOVANNA BABY AEROSOL FEM CANDY 150ML",
+    "external_url": "https://www.drogal.com.br/desodorante-antitranspirante-aerossol-giovanna-baby-candy-150ml/p"
+  },
+  "7896049526150": {
+    "ean": "7896049526150",
+    "category": "C",
+    "best_external_price": 11.89,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 11.71,
+    "name": "DESODORANTE HERBISSIMO TWIST NEUTRO 45G",
+    "external_url": "https://www.drogal.com.br/desodorante-antitraspirantre-em-creme-herbissimo-twist-neutro-45g/p"
+  },
+  "4005900429643": {
+    "ean": "4005900429643",
+    "category": "C",
+    "best_external_price": 17.29,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 13.94,
+    "name": "DESODORANTE NIVEA AER FEM INVIS FRESH BLACK&WHITE  92G/150ML",
+    "external_url": "https://www.drogal.com.br/desodorante-antitranspirante-aerosol-nivea-invisible-black-white-fresh-150ml/p"
+  },
+  "4005808631322": {
+    "ean": "4005808631322",
+    "category": "C",
+    "best_external_price": 13.71,
+    "best_external": "DROGAVEN",
+    "best": "DROGAVEN",
+    "internal_price": 13.94,
+    "name": "DESODORANTE NIVEA AEROSOL FEM DERMO CLAREADOR 90G/150ML",
+    "external_url": "https://www.drogaven.com.br/desodorante-nivea-dermo-clareador-3-em-aerossol-150ml/p"
+  },
+  "7791293032498": {
+    "ean": "7791293032498",
+    "category": "D",
+    "best_external_price": 12.99,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 20.37,
+    "name": "DESODORANTE REXONA AEROSOL FEM BAMBOO 90G/150ML",
+    "external_url": "https://www.drogal.com.br/desodorante-antitranspirante-aerosol-rexona-bamboo-72h-150ml/p"
+  },
+  "7791293051550": {
+    "ean": "7791293051550",
+    "category": "C",
+    "best_external_price": 26.95,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 20.1,
+    "name": "DESODORANTE REXONA AEROSOL FEM BODY FRESH CITRUS 150ML",
+    "external_url": "https://www.drogal.com.br/desodorante-corporal-aerossol-para-peitos-coxas-pes-e-mais-rexona-all-body-deo-fresh-citrus-150ml/p"
+  },
+  "7791293022567": {
+    "ean": "7791293022567",
+    "category": "C",
+    "best_external_price": 17.99,
+    "best_external": "DROGARAIA",
+    "best": "DROGARAIA",
+    "internal_price": 18.71,
+    "name": "DESODORANTE REXONA AEROSOL V8 90G/150ML",
+    "external_url": "https://www.drogaraia.com.br/desodorante-antitranspirante-aerosol-rexona-men-v8-150ml-631525.html"
+  },
+  "7791293032481": {
+    "ean": "7791293032481",
+    "category": "C",
+    "best_external_price": 12.99,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 20.37,
+    "name": "DESOSORANTE REXONA AEROSOL WOMAN INVISIBLE 90G/150ML",
+    "external_url": "https://www.drogal.com.br/desodorante-antitranspirante-aerosol-rexona-invisible-72h-150ml/p"
+  },
+  "7898632472776": {
+    "ean": "7898632472776",
+    "category": "C",
+    "best_external_price": 19.19,
+    "best_external": "DROGARAIA",
+    "best": "DROGARAIA",
+    "internal_price": 23.98,
+    "name": "ESFOLIANTE CORPO E ROSTO MARACUJA LABOTRAT 150G",
+    "external_url": "https://www.drogaraia.com.br/esfoliante-corpo-e-rosto-labotrat-maracuja-150g-943142.html"
+  },
+  "7899706239189": {
+    "ean": "7899706239189",
+    "category": "C",
+    "best_external_price": 5.55,
+    "best_external": "DROGARAIA",
+    "best": "DROGARAIA",
+    "internal_price": 7.87,
+    "name": "ESMALTE COLORAMA VEM VAI TER FINI",
+    "external_url": "https://www.drogaraia.com.br/colorama-esmalte-cremoso-colecao-fini-vem-vai-ter-fini-8ml.html"
+  },
+  "7891182016292": {
+    "ean": "7891182016292",
+    "category": "C",
+    "best_external_price": 17.99,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 23.78,
+    "name": "KOLESTON LOURO CINZA ESCURO 61",
+    "external_url": "https://www.drogal.com.br/tinta-de-cabelo-koleston-louro-cinza-escuro-61/p"
+  },
+  "7896061951619": {
+    "ean": "7896061951619",
+    "category": "C",
+    "best_external_price": 5.49,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 7.95,
+    "name": "LENCO SOFTYS C/50",
+    "external_url": "https://www.drogal.com.br/lencosdepapelsofty-s50unidades/p"
+  },
+  "7891010568764": {
+    "ean": "7891010568764",
+    "category": "C",
+    "best_external_price": 19.95,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 17.8,
+    "name": "LENCO UMEDECIDO J&J BABY HORA DO SONO C/48",
+    "external_url": "https://www.drogal.com.br/lencos-umedecidos-johnsons-baby-hora-do-sono-48-unidades/p"
+  },
+  "7891150074484": {
+    "ean": "7891150074484",
+    "category": "D",
+    "best_external_price": 22.05,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 27.78,
+    "name": "LOCAO HIDRATANTE DOVE BABY HORA DE DORMIR 200ML",
+    "external_url": "https://www.drogal.com.br/locao-hidratante-relaxante-baby-dove-hora-de-dormir-200ml/p"
+  },
+  "7891350026627": {
+    "ean": "7891350026627",
+    "category": "C",
+    "best_external_price": 24.49,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 31.89,
+    "name": "LOCAO POS BARBA BOZZANO NIGHT BLUE 100ML",
+    "external_url": "https://www.drogal.com.br/locao-facial-pos-barba-bozzano-night-blue-100ml/p"
+  },
+  "7899706129602": {
+    "ean": "7899706129602",
+    "category": "D",
+    "best_external_price": 78.15,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 86.25,
+    "name": "NORMADERM LIMPEZA PROFUNDA GEL 150ML",
+    "external_url": "https://www.drogal.com.br/gel-de-limpeza-facial-vichy-normaderm-150g/p"
+  },
+  "7894650009567": {
+    "ean": "7894650009567",
+    "category": "B",
+    "best_external_price": 22.29,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 19.67,
+    "name": "OFF FAMILY SPRAY 170ML",
+    "external_url": "https://www.drogal.com.br/repelente-off-family-spray-170ml/p"
+  },
+  "7894650005712": {
+    "ean": "7894650005712",
+    "category": "B",
+    "best_external_price": 23.89,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 20.28,
+    "name": "OFF! KIDS LOCAO LV 200 PAG 117ML",
+    "external_url": "https://www.drogal.com.br/locao-repelente-off-kids-200ml/p"
+  },
+  "7896902212596": {
+    "ean": "7896902212596",
+    "category": "D",
+    "best_external_price": 36.52,
+    "best_external": "DROGARAIA",
+    "best": "DROGARAIA",
+    "internal_price": 44.66,
+    "name": "PROTETOR FACIAL TOQUE SECO BEGE MEDIO FPS50 60G SUNLESS ",
+    "external_url": "https://www.drogaraia.com.br/protetor-solar-sunless-facial-fps-50-base-medio-60g-667720.html"
+  },
+  "7899706185769": {
+    "ean": "7899706185769",
+    "category": "C",
+    "best_external_price": 53.49,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 52.58,
+    "name": "PROTETOR HIDRATANTE + VITAMINA C COM COR MEDIA",
+    "external_url": "https://www.drogal.com.br/protetor-hidratante-facial-garnier-uniform-matte-fps50-media-40g/p"
+  },
+  "7891010099725": {
+    "ean": "7891010099725",
+    "category": "C",
+    "best_external_price": 37.85,
+    "best_external": "DROGARAIA",
+    "best": "DROGACENTRO",
+    "internal_price": 20.34,
+    "name": "SABONETE FACIAL NEUTROGENA DEEP CLEAN 80G",
+    "external_url": "https://www.drogaraia.com.br/neutrogena-deep-clean-sabonete-barra-facial-80g-791277.html"
+  },
+  "7896512911858": {
+    "ean": "7896512911858",
+    "category": "C",
+    "best_external_price": 9.57,
+    "best_external": "DROGARAIA",
+    "best": "DROGACENTRO",
+    "internal_price": 7.97,
+    "name": "SABONETE GRANADO GLIC.BEBE LAVANDA 90G",
+    "external_url": "https://www.drogaraia.com.br/sabonete-infantil-granado-bebe-lavanda-90g-632250.html"
+  },
+  "7891150024793": {
+    "ean": "7891150024793",
+    "category": "D",
+    "best_external_price": 2.39,
+    "best_external": "DROGARAIA",
+    "best": "DROGARAIA",
+    "internal_price": 3.39,
+    "name": "SABONETE REXONA ANTIBACTERIANO ORCHID 84G",
+    "external_url": "https://www.drogaraia.com.br/rexona-sabonete-em-barra-antibacteriano-agua-de-rosas-84g.html"
+  },
+  "7891150091467": {
+    "ean": "7891150091467",
+    "category": "D",
+    "best_external_price": 12.89,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 11.34,
+    "name": "SHAMPOO SEDA PREBIOT+BIOTINA 325ML",
+    "external_url": "https://www.drogal.com.br/shampoo-seda-prebioticos-biotina-325ml/p"
+  },
+  "7891033535040": {
+    "ean": "7891033535040",
+    "category": "C",
+    "best_external_price": 39.59,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 47.41,
+    "name": "SHAMPOO SIAGE LISO INTENSO 250ML",
+    "external_url": "https://www.drogal.com.br/shampoo-eudora-siage-liso-intenso-250ml/p"
+  },
+  "7899706181754": {
+    "ean": "7899706181754",
+    "category": "C",
+    "best_external_price": 79.79,
+    "best_external": "DROGARAIA",
+    "best": "DROGACENTRO",
+    "internal_price": 69.76,
+    "name": "SOLAR DEFENDER FPS60 MEDIA 40G",
+    "external_url": "https://www.drogaraia.com.br/protetor-solar-facial-l-039oreal-paris-fps60-uv-defender-media-40g-947130.html"
+  },
+  "7891010253288": {
+    "ean": "7891010253288",
+    "category": "C",
+    "best_external_price": 42.65,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 35.52,
+    "name": "SUNDOWN POS SOL GEL 140G",
+    "external_url": "https://www.drogal.com.br/gel-hidratante-pos-sol-sundown-95-aloe-vera-140g/p"
+  },
+  "7896020160052": {
+    "ean": "7896020160052",
+    "category": "B",
+    "best_external_price": 13.15,
+    "best_external": "DROGAL",
+    "best": "DROGAL",
+    "internal_price": 14.69,
+    "name": "TENYS PE BARUEL TRADICIONAL 100G",
+    "external_url": "https://www.drogal.com.br/tenys-pe-baruel-po-100g-orig/p"
+  },
+  "7908615062471": {
+    "ean": "7908615062471",
+    "category": "C",
+    "best_external_price": 19.99,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 19.84,
+    "name": "TINTURA COR&TON SEM AMONIA LOURO ESCURO 6.0",
+    "external_url": "https://www.drogal.com.br/coloracao-alta-duracao-corton-0-amonia-louro-escuro-60/p"
+  },
+  "7899706237932": {
+    "ean": "7899706237932",
+    "category": "C",
+    "best_external_price": 36.99,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 32.58,
+    "name": "TONALIZANTE IMEDIA EXCELLENCE S/AMONIA LOURO ESCURO 7U",
+    "external_url": "https://www.drogal.com.br/tintura-imedia-excellence-loreal-paris-sem-amonia-7u-louro-universal/p"
+  },
+  "7891150094406": {
+    "ean": "7891150094406",
+    "category": "C",
+    "best_external_price": 40.85,
+    "best_external": "DROGAL",
+    "best": "DROGACENTRO",
+    "internal_price": 34.54,
+    "name": "TRESEMME OLEO FINALIZA B LAMELAR 60ML",
+    "external_url": "https://www.drogal.com.br/oleo-finalizador-tresemme-brilho-lamelar-60ml/p"
+  }
+}

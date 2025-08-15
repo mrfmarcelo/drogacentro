@@ -223,6 +223,7 @@ def main():
     print(f"\nEncontradas {len(unique_product_urls)} URLs de produtos.")
 
     scraped_products = []
+    no_ean = []
     total_failed_products = 0
 
     # Iniciar teste ou scraping
@@ -236,10 +237,13 @@ def main():
     # Usar workers para scraping em paralelo
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         for product_info in tqdm(executor.map(scrape_single_product, urls_to_scrape), total=len(urls_to_scrape), desc="Extraindo Produtos..."):
-            if product_info:
-                scraped_products.append(product_info)
-            else:
+            if not product_info:
                 total_failed_products += 1
+                continue
+            if not product_info['ean']:
+                no_ean.append(product_info)
+                continue
+            scraped_products.append(product_info)
 
     # Salvar em arquivos
     save_data_to_files(scraped_products)

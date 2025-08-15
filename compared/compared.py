@@ -51,6 +51,7 @@ def save_data_to_files(data, output_dir="output"):
 
     if data:
         df = pd.DataFrame(data).T
+        df.columns = ['Código de barras', 'Curva', 'Preço concorrente', 'Melhor concorrente', 'Comparação', 'Preço oferta', 'Nome', 'Link concorrente']
 
         df.to_csv(csv_filepath, sep=';', index=False)
         print(f"Data saved as: {csv_filepath}.")
@@ -64,7 +65,6 @@ def save_data_to_files(data, output_dir="output"):
 def main():
     start_time = time.perf_counter()
    
-
     # Import external catalog
     with open(OUTSIDE_CATALOG, 'r', encoding='utf-8') as f:
         external_dict = json.load(f)

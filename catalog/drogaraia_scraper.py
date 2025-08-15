@@ -9,7 +9,7 @@ from datetime import datetime
 from tqdm import tqdm
 
 # --- Required modules ---
-# python -m pip install requests lxml fake_useragent beautifulsoup4 tqdm pandas openpyxl 
+# python -m pip install requests lxml fake_useragent beautifulsoup4 tqdm pandas openpyxl
 
 # --- Configuration ---
 SITEMAP_URL = "https://www.drogaraia.com.br/sitemap/2/sitemap.xml"

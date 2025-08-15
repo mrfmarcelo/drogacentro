@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import re
 import json
 import time
 import concurrent.futures
@@ -10,11 +9,10 @@ from datetime import datetime
 from tqdm import tqdm
 
 # --- Módulos necessários ---
-# python -m pip install requests beautifulsoup4 lxml tqdm pandas
+# python -m pip install requests lxml fake_useragent beautifulsoup4 tqdm pandas openpyxl
 
 # --- Configuração ---
 ROOT_SITEMAP_URL = "https://www.drogal.com.br/sitemap.xml"
-PRODUCT_SITEMAP_REGEX = r"https://www\.drogal\.com\.br/sitemap/product-\d+\.xml"
 
 # Número máximo de threads para scraping paralelo
 MAX_WORKERS = 500  # Ajuste conforme a capacidade do seu sistema e tolerância do site
@@ -24,20 +22,28 @@ TEST_RUN = True
 SAMPLE_SIZE = 500 # Number of URLs to scrape if SCRAPE_ALL_URLS is False
 
 # Seletores CSS para extração de dados
-PRICE_SELECTOR = ".undefined.drogal-product-page-0-x-drogal-product-page-product-base-price div"
-FALLBACK_PRICE_SELECTOR = "div.drogal-product-page-0-x-drogal-product-page-product-base-price span.drogal-product-page-0-x-drogal-product-page-selling-price"
-GENERAL_PRICE_CONTAINER = "div.drogal-product-page-0-x-drogal-product-page-product-base-price"
-TAG_SELECTOR = 'script[type="application/ld+json"]'
+PRICE_SELECTOR = 'meta[property="product:price:amount"]'
+NAME_SELECTOR = 'script[type="application/ld+json"]'
 EAN_SELECTOR = 'template[data-type="json"][data-varname="__STATE__"] > script'
 
 # Headers para simular um navegador e evitar bloqueio
 HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0'
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+    'Accept-Language': 'en-US,en;q=0.5',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Connection': 'keep-alive',
+    'Upgrade-Insecure-Requests': '1'
 }
 
 print('\n --- Drogal Scraper ---\n')
 
+# Checar a variável de teste
+if TEST_RUN:
+    print(f'Iniciando teste com {SAMPLE_SIZE} URLs\n')
+
 # --- Funções acessórias ---
+
 def fetch_url(url):
     """
     Baixa o conteúdo de uma URL com o User-Agent
@@ -48,6 +54,7 @@ def fetch_url(url):
         return response.text
     except requests.exceptions.RequestException:
         return None
+
 
 def get_product_sitemap_urls(root_sitemap_url):
     """
@@ -61,12 +68,15 @@ def get_product_sitemap_urls(root_sitemap_url):
 
     soup = BeautifulSoup(xml_content, 'xml')
     product_sitemap_urls = []
+    url_prefix = "https://www.drogal.com.br/sitemap/product-"
+
     for loc_tag in soup.find_all('loc'):
         sitemap_url = loc_tag.get_text()
-        if re.match(PRODUCT_SITEMAP_REGEX, sitemap_url):
+        if sitemap_url.startswith(url_prefix) and sitemap_url.endswith('.xml'):
             product_sitemap_urls.append(sitemap_url)
-    time.sleep(1)
+    time.sleep(2)
     return product_sitemap_urls
+
 
 def extract_product_urls_from_sitemap(sitemap_url):
     """
@@ -80,32 +90,9 @@ def extract_product_urls_from_sitemap(sitemap_url):
 
     soup = BeautifulSoup(xml_content, 'xml')
     urls = [loc_tag.get_text() for loc_tag in soup.find_all('loc')]
-    time.sleep(1)
+    time.sleep(2)
     return urls
 
-def extract_price_element(soup_obj):
-    """
-    Extrai o elemento de preço a partir do objeto BeautifulSoup
-    """
-    price_element = soup_obj.select_one(PRICE_SELECTOR)
-    if price_element:
-        return price_element
-
-    price_element = soup_obj.select_one(FALLBACK_PRICE_SELECTOR)
-    if price_element:
-        return price_element
-
-    general_container = soup_obj.select_one(GENERAL_PRICE_CONTAINER)
-    if not general_container:
-        return None
-
-    potential_price_elements = general_container.find_all(['span', 'div'])
-    for element in potential_price_elements:
-        price_text = element.get_text(strip=True)
-        match = re.search(r'(\d[\d.,]*)', price_text)
-        if match:
-            return element
-    return None
 
 def parse_product_page(html_content, url):
     """
@@ -115,21 +102,17 @@ def parse_product_page(html_content, url):
     soup = BeautifulSoup(html_content, 'html.parser')
     product_data = {"url": url, "price": None, "ean": None, "name": None}
 
-    price_element = extract_price_element(soup)
-    if price_element:
-        price_text = price_element.get_text(strip=True)
-        match = re.search(r'(\d[\d.,]*)', price_text)
-        if match:
-            cleaned_price = match.group(1).replace('.', '').replace(',', '.')
-            try:
-                product_data["price"] = float(cleaned_price)
-            except ValueError:
-                product_data["price"] = price_text
-        else:
-            product_data["price"] = price_text
 
+    # Extrai a tag para o preço
+    try:
+        price_tag = soup.select_one(PRICE_SELECTOR)
+        product_data['price'] = float(price_tag.get('content'))
+    except (AttributeError, ValueError, TypeError):
+        pass
+
+    # Extrai a tag para o nome
     json_ld_content = None
-    json_string = soup.select_one(TAG_SELECTOR)
+    json_string = soup.select_one(NAME_SELECTOR)
     if json_string and json_string.string:
         try:
             json_ld_content = json.loads(json_string.string)
@@ -137,6 +120,7 @@ def parse_product_page(html_content, url):
         except (json.JSONDecodeError, AttributeError):
             pass
 
+    # Extrai a tag para a ean
     ean_script = soup.select_one(EAN_SELECTOR)
     try:
         ean_json = json.loads(ean_script.string)
@@ -155,6 +139,7 @@ def parse_product_page(html_content, url):
 
     return product_data
 
+
 def scrape_single_product(url):
     """
     Função para o worker baixar e processar a URL de um um único produto
@@ -167,6 +152,7 @@ def scrape_single_product(url):
     product_info = parse_product_page(html_content, url)
     time.sleep(2) # Pausa entre os requests
     return product_info
+
 
 def save_data_to_files(data, output_dir="output"):
     """
@@ -203,6 +189,7 @@ def save_data_to_files(data, output_dir="output"):
     else:
         print("Nenhum dado para salvar.")
 
+
 def main():
     start_time = time.perf_counter()
 
@@ -223,6 +210,7 @@ def main():
     print(f"\nEncontradas {len(unique_product_urls)} URLs de produtos.")
 
     scraped_products = []
+    no_ean = []
     total_failed_products = 0
 
     # Iniciar teste ou scraping
@@ -236,10 +224,13 @@ def main():
     # Usar workers para scraping em paralelo
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         for product_info in tqdm(executor.map(scrape_single_product, urls_to_scrape), total=len(urls_to_scrape), desc="Extraindo Produtos..."):
-            if product_info:
-                scraped_products.append(product_info)
-            else:
+            if not product_info:
                 total_failed_products += 1
+                continue
+            if not product_info['ean']:
+                no_ean.append(product_info)
+                continue
+            scraped_products.append(product_info)
 
     # Salvar em arquivos
     save_data_to_files(scraped_products)

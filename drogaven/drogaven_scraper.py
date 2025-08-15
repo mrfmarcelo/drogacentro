@@ -9,22 +9,20 @@ from datetime import datetime
 from tqdm import tqdm
 
 # --- Required modules ---
-# python -m pip install requests beautifulsoup4 lxml tqdm fake_useragent
+# python -m pip install requests lxml fake_useragent beautifulsoup4 tqdm pandas openpyxl
 
 # --- Configuration ---
 SITEMAP_URL = "https://io.convertiez.com.br/s/drogaven/sitemap-products-1.xml"
 
 # Set the maximum number of worker threads for multi-threading
-MAX_WORKERS = 5 # You can adjust this value based on your system's capabilities and website's tolerance
+MAX_WORKERS = 500 # You can adjust this value based on your system's capabilities and website's tolerance
 
 # Control scraping scope: Set to True to scrape all unique URLs, False to scrape a sample
 TEST_RUN = True
-SAMPLE_SIZE = 100 # Number of URLs to scrape if SCRAPE_ALL_URLS is False
+SAMPLE_SIZE = 500 # Number of URLs to scrape if SCRAPE_ALL_URLS is False
 
 # Selectors for data extraction
-PRICE_SELECTOR = ".undefined.drogal-product-page-0-x-drogal-product-page-product-base-price div"
-FALLBACK_PRICE_SELECTOR = "div.drogal-product-page-0-x-drogal-product-page-product-base-price span.drogal-product-page-0-x-drogal-product-page-selling-price"
-GENERAL_PRICE_CONTAINER = "div.drogal-product-page-0-x-drogal-product-page-product-base-price"
+PRICE_SELECTOR = 'p.seal-pix.pix-price.sale-price.sale-price-pix.money'
 NAME_SELECTOR = 'meta[name="description"]'
 EAN_SELECTOR = 'meta[itemprop="gtin13"]'
 
@@ -40,6 +38,10 @@ HEADERS = {
 
 
 print('\n --- Drogaven Scraper ---\n')
+
+# Checar a variável de teste
+if TEST_RUN:
+    print(f'Iniciando teste com {SAMPLE_SIZE} URLs\n')
 
 # --- Funções acessórias ---
 
@@ -81,9 +83,8 @@ def parse_product_page(html_content, url):
 
 
     # Extrai a tag para o preço
-    price_paragraph = soup.select_one('p.seal-pix.pix-price.sale-price.sale-price-pix.money')
-
     try:
+        price_paragraph = soup.select_one(PRICE_SELECTOR)
         strong_tag = price_paragraph.find('strong')
         price_text = strong_tag.get_text(strip=True)
         cleaned_price = price_text.replace('R$', '').replace(',', '.').strip()
@@ -92,15 +93,13 @@ def parse_product_page(html_content, url):
     except (AttributeError, ValueError, TypeError):
         pass
 
-
     # Extrai a tag para o nome
     try:
         name_description_tag = soup.select_one(NAME_SELECTOR)
         product_data["name"] = name_description_tag.get('content')
     except (json.JSONDecodeError, AttributeError):
         pass
-        
-        
+                
     # Extrai a tag para o EAN
     try:
         ean_description_tag = soup.select_one(EAN_SELECTOR)
@@ -196,6 +195,7 @@ def main():
                 continue
             if not product_info['ean']:
                 no_ean.append(product_info)
+                continue
             scraped_products.append(product_info)
 
     # Salvar em arquivos
@@ -203,10 +203,13 @@ def main():
 
     end_time = time.perf_counter()
     total_time = end_time - start_time
-    print(f"\nTempo total: {total_time:.2f} segundos")
-    print(f"Total de produtos com sucesso: {len(scraped_products)}")
-    print(f"Total de produtos sem EAN: {len(no_ean)}.")
-    print(f"Total de produtos com falha: {total_failed_products}")
+    print(f"""
+          Drogaven:
+    Tempo total: {total_time:.2f} segundos
+    Total de produtos com sucesso: {len(scraped_products)}
+    Total de produtos sem EAN: {len(no_ean)}
+    Total de produtos com falha: {total_failed_products}
+    """)
 
 
 if __name__ == "__main__":

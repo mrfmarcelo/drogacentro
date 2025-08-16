@@ -2,9 +2,11 @@ import requests
 from bs4 import BeautifulSoup
 import json
 import time
+import random
 import concurrent.futures
 import os
 import pandas as pd
+from fake_useragent import UserAgent
 from datetime import datetime
 from tqdm import tqdm
 
@@ -16,47 +18,131 @@ SITEMAP_URL = "https://www.drogaraia.com.br/sitemap/2/sitemap.xml"
 OUTPUT_DIR = 'output'
 
 # Set the maximum number of worker threads for multi-threading
-MAX_WORKERS = 500 # You can adjust this value based on your system's capabilities and website's tolerance
+MAX_WORKERS = 10 # You can adjust this value based on your system's capabilities and website's tolerance
+
+# Sets the pause values for fetch_url()
+INITIAL_SLEEP_TIME = 300
+MAX_RETRIES = 5
+MAX_403_CODES = 3
 
 # Control scraping scope: Set to True to scrape all unique URLs, False to scrape a sample
 TEST_RUN = True
-SAMPLE_SIZE = 500 # Number of URLs to scrape if SCRAPE_ALL_URLS is False
+SAMPLE_SIZE = 500 # Number of URLs to scrape if TEST_RUN is True
 
 # Selectors for data extraction
 PRICE_SELECTOR = 'meta[property="product:price:amount"]'
 NAME_SELECTOR = 'meta[property="og:image:alt"]'
 EAN_SELECTOR = 'script[type="application/ld+json"]'
 
-# Headers to mimic a browser request and avoid being blocked
-HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:142.0) Gecko/20100101 Firefox/142.0',
+# Headers (without User-Agent) to mimic a browser request and avoid being blocked
+BASE_HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
     'Accept-Language': 'en-US,en;q=0.5',
-    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Encoding': 'gzip, deflate, br, ztsd',
     'Connection': 'keep-alive',
-    'Upgrade-Insecure-Requests': '1'
+    'Upgrade-Insecure-Requests': '1',
+    'User-Agent': ''
 }
 
+# Global variables to persist across all function calls
+global_ua_instance = UserAgent()
+bad_uas = set()
 
+
+# Iniciar e checar a variável de teste
 print('\n --- DrogaRaia Scraper ---\n')
-
-# Checar a variável de teste
 if TEST_RUN:
     print(f'Iniciando teste com {SAMPLE_SIZE} URLs\n')
 
+
 # --- Funções acessórias ---
 
-def fetch_url(url):
-    """
-    Baixa o conteúdo de uma URL com o User-Agent
-    """
-    try:
-        response = requests.get(url, headers=HEADERS, timeout=10)
-        response.raise_for_status()
-        return response.text
-    except requests.exceptions.RequestException:
-        return None
+def url_attempt(url, max_retries):
 
+    last_status_code = None
+    for attempt in range(max_retries):    
+        current_ua_string = ''
+        try:
+            # Get a new random user agent that is NOT in our bad list
+            current_ua_string = global_ua_instance.random
+            while current_ua_string in bad_uas:
+                current_ua_string = global_ua_instance.random
+
+            headers = BASE_HEADERS.copy()
+            headers['User-Agent'] = current_ua_string
+
+            print(f"Attempt {attempt + 1} of {max_retries}: Fetching {url} with User-Agent: {headers['User-Agent']}")
+            response = requests.get(url, headers=headers, timeout=10)
+            
+            # This will raise an exception for 4xx or 5xx status codes
+            response.raise_for_status()
+            
+            print(f"✅ Success with: {current_ua_string}")
+            return response.text
+        
+        except requests.exceptions.RequestException as e:
+            # Capture the status code if the exception has a response object
+            if e.response is not None:
+                last_status_code = e.response.status_code
+            
+            print(f"Request failed: {e}")
+            print(f"❌ Failed with User-Agent: {current_ua_string}")
+            bad_uas.add(current_ua_string)
+            print(f"Adding to blacklist. Current bad UAs: {len(bad_uas)}")
+            
+            # Check for a 403 specifically, but only after all retries have been exhausted
+            if attempt == max_retries - 1 and last_status_code == 403:
+                # Break the inner loop to trigger the exponential backoff logic
+                return last_status_code
+            
+            # End of the failed attempt
+            sleep_time = random.uniform(2, 5)
+            print(f"Retrying in {sleep_time:.2f} seconds...")
+            time.sleep(sleep_time)
+
+
+def fetch_url(url, max_retries=MAX_RETRIES, max_403_attempts=MAX_403_CODES):
+    """
+    Handles the fetching of a URL with a rotating User-Agent.
+    
+    If a 403 Forbidden error is encountered after all retries, the script
+    will pause with an exponentially increasing delay and then retry the URL.
+        
+    Returns:
+        response.text (str) if successful.
+        None otherwise.
+    """
+    
+    current_sleep_time = 300 # Initial pause time in seconds for a 403 error
+    consecutive_403_count = 0
+    
+    while consecutive_403_count < max_403_attempts:
+        # Performs multiple attempts at URL
+        last_response = url_attempt(url, max_retries)
+
+        # last_responde can be either the payload or an error status code
+        if isinstance(last_response, str):
+            return last_response
+
+        # After the inner loop, check if the last failure was a 403
+        if last_response == 403 and current_sleep_time < 3600:
+            consecutive_403_count += 1
+            print(f"⚠️ All retries failed with 403. Pausing for {current_sleep_time} seconds before trying again...")
+            time.sleep(current_sleep_time)
+            
+            # Exponentially increase the sleep time, capping at 1 hour
+            current_sleep_time = min(current_sleep_time * 1.5, 3600)
+            
+        else:
+            # If the last error was NOT a 403, something else is wrong.
+            # Stop trying on this URL and move on.
+            print(f"Final status was {last_response}. Abandoning URL.")
+            return None
+    
+    # If the max 403 attempts were exhausted, give up on this URL.
+    print(f"Maximum 403 attempts ({max_403_attempts}) exceeded. Abandoning URL.")
+    return None
+    
 
 def extract_product_urls_from_sitemap(sitemap_url):
     """
@@ -223,6 +309,9 @@ def main():
     Total de produtos sem EAN: {len(no_ean)}
     Total de produtos com falha: {total_failed_products}
     """)
+
+    print(f"\nFinal count of blacklisted UAs: {len(bad_uas)}")
+    print("This blacklist can be used for the entire script run.")
 
 
 if __name__ == "__main__":

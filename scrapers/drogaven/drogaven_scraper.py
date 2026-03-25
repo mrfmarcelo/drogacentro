@@ -16,7 +16,8 @@ SITEMAP_URL = "https://io.convertiez.com.br/s/drogaven/sitemap-products-1.xml"
 OUTPUT_DIR = 'output'
 
 # Set the maximum number of worker threads for multi-threading
-MAX_WORKERS = 500 # You can adjust this value based on your system's capabilities and website's tolerance
+MAX_WORKERS = 150 # You can adjust this value based on your system's capabilities and website's tolerance
+SLEEP_TIME = 2 # Seconds before next request
 
 # Control scraping scope: Set to True to scrape all unique URLs, False to scrape a sample
 TEST_RUN = True
@@ -70,7 +71,7 @@ def extract_product_urls_from_sitemap(sitemap_url):
 
     soup = BeautifulSoup(xml_content, 'xml')
     urls = [loc_tag.get_text() for loc_tag in soup.find_all('loc')]
-    time.sleep(1)
+    time.sleep(SLEEP_TIME)
     return urls
 
 
@@ -102,11 +103,27 @@ def parse_product_page(html_content, url):
         pass
                 
     # Extrai a tag para o EAN
+
     try:
-        ean_description_tag = soup.select_one(EAN_SELECTOR)
-        product_data["ean"] = ean_description_tag.get('content')
-    except (json.JSONDecodeError, AttributeError):
+        # 1. Find the specific JSON-LD script that contains the "Product" type
+        json_ld_tag = soup.find('script', type='application/ld+json')
+        
+        if json_ld_tag:
+            # 2. Load the string as a Python dictionary
+            data = json.loads(json_ld_tag.string)
+            
+            # 3. Extract the gtin13 (EAN) value
+            product_data["ean"] = data.get('gtin13')
+            
+    except (json.JSONDecodeError, AttributeError, TypeError):
+        # Gracefully skip if JSON is malformed or the tag is missing
         pass
+
+    # try:
+    #     ean_description_tag = soup.select_one(EAN_SELECTOR)
+    #     product_data["ean"] = ean_description_tag.get('content')
+    # except (json.JSONDecodeError, AttributeError):
+    #     pass
         
 
     # Junta os dados
@@ -126,7 +143,7 @@ def scrape_single_product(url):
         return None
 
     product_info = parse_product_page(html_content, url)
-    time.sleep(2) # Pausa entre os requests
+    time.sleep(SLEEP_TIME) # Pausa entre os requests
     return product_info
 
 
@@ -185,6 +202,9 @@ def main():
     if TEST_RUN:
         urls_to_scrape = unique_product_urls[:SAMPLE_SIZE]
         print(f"Extraindo {len(urls_to_scrape)} URLs de produtos para teste...")
+        with open(f'{OUTPUT_DIR}/drogaven_sample_urls.txt', 'w+', encoding='utf-8') as f:
+            for url in urls_to_scrape:
+                f.write(url + '\n')        
     else:
         urls_to_scrape = unique_product_urls
         print(f"Extraindo {len(urls_to_scrape)} URLs de produtos...")

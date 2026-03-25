@@ -113,7 +113,7 @@ def fetch_url(url, max_retries=MAX_RETRIES, max_403_attempts=MAX_403_CODES):
         None otherwise.
     """
     
-    current_sleep_time = 300 # Initial pause time in seconds for a 403 error
+    current_sleep_time = INITIAL_SLEEP_TIME # Initial pause time in seconds for a 403 error
     consecutive_403_count = 0
     
     while consecutive_403_count < max_403_attempts:

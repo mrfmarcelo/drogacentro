@@ -15,8 +15,9 @@ from tqdm import tqdm
 ROOT_SITEMAP_URL = "https://www.drogal.com.br/sitemap.xml"
 OUTPUT_DIR = 'output'
 
-# Número máximo de threads para scraping paralelo
-MAX_WORKERS = 500  # Ajuste conforme a capacidade do seu sistema e tolerância do site
+# Limites de raspagem
+MAX_WORKERS = 150  # Número máximo de threads para scraping paralelo
+SLEEP_TIME = 2  # Segundos até o próximo request
 
 # Testar scraping: True para testar, False para scraping normal
 TEST_RUN = True
@@ -75,8 +76,8 @@ def get_product_sitemap_urls(root_sitemap_url):
         sitemap_url = loc_tag.get_text()
         if sitemap_url.startswith(url_prefix) and sitemap_url.endswith('.xml'):
             product_sitemap_urls.append(sitemap_url)
-    time.sleep(2)
-    return product_sitemap_urls
+    time.sleep(SLEEP_TIME)
+    return product_sitemap_urls[:2]
 
 
 def extract_product_urls_from_sitemap(sitemap_url):
@@ -90,9 +91,9 @@ def extract_product_urls_from_sitemap(sitemap_url):
         return []
 
     soup = BeautifulSoup(xml_content, 'xml')
-    urls = [loc_tag.get_text() for loc_tag in soup.find_all('loc')]
-    time.sleep(2)
-    return urls
+    urls = [loc_tag.get_text().encode('utf-8').decode('utf-8') for loc_tag in soup.find_all('loc')]
+    time.sleep(SLEEP_TIME)
+    return sorted(urls)
 
 
 def parse_product_page(html_content, url):
@@ -151,7 +152,7 @@ def scrape_single_product(url):
         return None
 
     product_info = parse_product_page(html_content, url)
-    time.sleep(2) # Pausa entre os requests
+    time.sleep(SLEEP_TIME) # Pausa entre os requests
     return product_info
 
 
@@ -219,6 +220,9 @@ def main():
     if TEST_RUN:
         urls_to_scrape = unique_product_urls[:SAMPLE_SIZE]
         print(f"Extraindo {len(urls_to_scrape)} URLs de produtos para teste...")
+        with open(f'{OUTPUT_DIR}/drogal_sample_urls.txt', 'w+', encoding='utf-8') as f:
+            for url in urls_to_scrape:
+                f.write(url + '\n')
     else:
         urls_to_scrape = unique_product_urls
         print(f"Extraindo {len(urls_to_scrape)} URLs de produtos...")

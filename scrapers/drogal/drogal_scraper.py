@@ -77,7 +77,7 @@ def get_product_sitemap_urls(root_sitemap_url):
         if sitemap_url.startswith(url_prefix) and sitemap_url.endswith('.xml'):
             product_sitemap_urls.append(sitemap_url)
     time.sleep(SLEEP_TIME)
-    return product_sitemap_urls[:2]
+    return product_sitemap_urls
 
 
 def extract_product_urls_from_sitemap(sitemap_url):
